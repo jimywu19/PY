@@ -1,3 +1,5 @@
+#爬虫模版
+
 import requests
 from bs4 import BeautifulSoup
 import xlwt
@@ -55,8 +57,6 @@ def save_to_excel(soup):
         sheet.write(n, 5, item_intr)
 
         n = n + 1
-
-
 
 def main(page):
     url = 'https://movie.douban.com/top250?start='+ str(page*25)+'&filter='
