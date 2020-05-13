@@ -1,5 +1,7 @@
 # _*_ coding: utf-8 _*_
 
+# cve_2019_0708漏洞检测
+
 import os
 import sys
 import subprocess
