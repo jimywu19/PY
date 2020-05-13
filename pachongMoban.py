@@ -40,6 +40,7 @@ def save_to_excel(soup):
             item_intr = item_intr.string
         else:
             item_intr = ""
+        # pattern_regex.findall(page_html) if page_html else []
 
         # print('爬取电影：' + item_index + ' | ' + item_name +' | ' + item_img +' | ' + item_score +' | ' + item_author +' | ' + item_intr )
         print('爬取电影：' + item_index + ' | ' + item_name  +' | ' + item_score  +' | ' + item_intr )
