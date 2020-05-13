@@ -1,3 +1,5 @@
+#雨果网新闻爬取
+
 import requests
 from bs4 import BeautifulSoup
 import xlwt
