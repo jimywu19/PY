@@ -8,24 +8,42 @@ HEADERS = {
 def req_luoma(url):
     try:
         req = requests.get(url,headers=HEADERS)
+        req.encoding = 'utf-8'
         if req.status_code == 200:
-            return req.content
+            return req.text
     except requests.RequestException:
         return None
 
-def main():
-    baseUrl = "https://www.yooread.net/5/4513/"
-    start = '177969'
-    end = '177996'
+def save_story(text):
+    with open("d:\luoma_story.txt",'a+',encoding='utf-8') as f:
+        num = len(text)
+        i=0
+        while i < num:
+            f.write('\t')
+            f.write(text[i].get_text())
+            f.write("\n")
+            i+=1
      
-    for i in range(177969,177997):
-        url =baseUrl + str(i) + ".html"
-        html = req_luoma(url)
-        soup = BeautifulSoup(html,"lxml")
-        story = soup.find(class_="read-content").findall('p').read_content
+
+def main(i):
+    baseUrl = "https://www.yooread.net/5/4513/"
+    url =baseUrl + str(i) + ".html"
+    html = req_luoma(url)
+    soup = BeautifulSoup(html,"lxml")
+    story = soup.find(class_="read-content")
+    story = story.find_all('p')
+    save_story(story)
+
+    # story = story.read_content
+    # print(story)
 
 if __name__ == "__main__":
-    main()
+    start = 177969
+    end = 177996
+
+    for i in range(start,end+1): 
+        main(i)
+
 
 # //*[@id="TextContent"]/p
 # //*[@id="TextContent"]/p
