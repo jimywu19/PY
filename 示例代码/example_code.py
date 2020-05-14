@@ -1,12 +1,12 @@
 ###### robotparser：解析robots.txt的工具
 
->>> from urllib import robotparser
->>> parser = robotparser.RobotFileParser()
->>> parser.set_url('https://www.taobao.com/robots.txt')
->>> parser.read()
->>> parser.can_fetch('Baiduspider', 'http://www.taobao.com/article')
+from urllib import robotparser
+parser = robotparser.RobotFileParser()
+parser.set_url('https://www.taobao.com/robots.txt')
+parser.read()
+parser.can_fetch('Baiduspider', 'http://www.taobao.com/article')
 True
->>> parser.can_fetch('Baiduspider', 'http://www.taobao.com/product')
+parser.can_fetch('Baiduspider', 'http://www.taobao.com/product')
 False
 
 
@@ -102,8 +102,9 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
 
 import os
 
-#root = '%s%s%s' % ('..', os.path.sep, 'food')
-dir = 'c:/users/jimywu/documents/project/food'
+# root = '%s%s%s' % ('..', os.path.sep, 'food')
+# dir = 'c:/users/jimywu/documents/project/food'
+dir = os.path.expandvars('%userprofile%\\document\\')
 for  file_list in os.walk(dir):
     for name in file_list[2]:
         print('File: ' + name)
