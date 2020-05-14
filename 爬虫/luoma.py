@@ -17,39 +17,49 @@ def req_luoma(url):
 
 def save_story(title,text):
     with open("d:\luoma_story.txt",'a+',encoding='utf-8') as f:
-        f.write('\t\t\t\t' + title +'\t\t\n\n')
+        if title:
+            f.write('\n\t\t\t\t' + title +'\n\n')
         num = len(text)
         i=0
         while i < num:
-            f.write('\t')
-            f.write(text[i].get_text())
-            f.write("\n")
+            f.write('    '+ text[i].get_text() + "\n")
             i+=1
-        f.write('\n')
-     
 
-def main(i):
+def main():
     baseUrl = "https://www.yooread.net/5/4513/"
-    url =baseUrl + str(i) + ".html"
-    html = req_luoma(url)
-    soup = BeautifulSoup(html,"lxml")
-    title = soup.find('h1').string
-    story = soup.find(class_="read-content")
-    story = story.find_all('p')
-    save_story(title,story)
-
-    # story = story.read_content
-    # print(story)
+    url =baseUrl + "177969.html"
+    change = 1
+    while True:
+        sleep(2)        
+        html = req_luoma(url)
+        soup = BeautifulSoup(html,"lxml")
+        if change == 1 :
+            title = soup.find('h1').string
+        else :
+            title = ''
+        # story = soup.get_text()
+        story = soup.find(class_="read-content").find_all('p')
+        page = soup.find(class_='mlfy_page').find_all('a')[3]
+        page_string = page.string
+        if page_string != '返回列表':
+            next_i = page.get('href')
+            url = baseUrl + '../..' + next_i         
+            if page_string == '下一页':
+                change = 0
+            else :
+                change = 1
+            save_story(title,story)
+        else :
+            break
 
 if __name__ == "__main__":
-    start = 177969
-    end = 177996
+    main()
+    # start = 177969
+    # end = 177996
 
-    for i in range(start,end+1): 
-        main(i)
-        sleep(5)
+    # for i in range(start,end+1): 
+    #     main(i)
+    #     sleep(5)
 
 
-# //*[@id="TextContent"]/p
-# //*[@id="TextContent"]/p
 
