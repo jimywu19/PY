@@ -1,0 +1,20 @@
+1589514026226	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\rust_mozprofilemU0glX"
+1589514030215	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1589514031061	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1589514031061	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1589514031062	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1589514031062	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1589514037177	Marionette	INFO	Listening on port 58440
+1589514037211	Marionette	WARN	TLS certificate errors will be ignored for this session
+WebGL(000001CA2240F800)::ForceLoseContext
+WebGL(000001CA2240D800)::ForceLoseContext
+1589521936749	Marionette	INFO	Stopped listening on port 58440
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+[0x7FF979415060] ANOMALY: meaningless REX prefix used
+[0x7FF9794150A0] ANOMALY: meaningless REX prefix used
+[0x7FF979415240] ANOMALY: meaningless REX prefix used
+[0x7FF979413630] ANOMALY: meaningless REX prefix used
+[0x7FF9794120A0] ANOMALY: meaningless REX prefix used

@@ -1,6 +1,7 @@
 ###### robotparser：解析robots.txt的工具
 
 from urllib import robotparser
+
 parser = robotparser.RobotFileParser()
 parser.set_url('https://www.taobao.com/robots.txt')
 parser.read()
@@ -10,23 +11,7 @@ parser.can_fetch('Baiduspider', 'http://www.taobao.com/product')
 False
 
 
-#取文件下载的URL链接中文件名
-import requests
-url = 'https://github.com/jackfrued/Python-100-Days/blob/master/Day01-15/14.txt'
-filename = url[url.rfind('/') + :1]
-print(filename)
-
-##以对应的文件名保存url中的文件到本地，
-resp = requests.get(url)
-with open('/home/jimy' + filename, 'wb') as f:
-    f.write(resp.content)
-'''
-dump       json-->file
-load       file-->json
-'''
-
-
-########通过下面的字典避免重复抓取并控制抓取深度
+###### 通过下面的字典避免重复抓取并控制抓取深度
 
 def start_crawl(seed_url, match_pattern, *, max_depth=-1):
     """开始执行爬虫程序并对指定的数据进行持久化操作"""
@@ -59,7 +44,7 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
 
 
 
-######## mysql 存取
+#mysql 存取
 
 import pymysql
 from pymysql import Error
@@ -97,56 +82,3 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
         # logging.error('SQL:', error)
     finally:
         conn.close()
-
-######### 遍历windows目录
-
-import os
-
-# root = '%s%s%s' % ('..', os.path.sep, 'food')
-# dir = 'c:/users/jimywu/documents/project/food'
-dir = os.path.expandvars('%userprofile%\\document\\')
-for  file_list in os.walk(dir):
-    for name in file_list[2]:
-        print('File: ' + name)
-
-
-######## turtle 画画
-
-import turtle
-
-turtle.pensize(3)
-turtle.pencolor('red')
-
-for i in range(50,100,3):
-    turtle.forward(i)
-    turtle.right(60)
-    
-turtle.mainloop()
-
-
-###########3 日志
-
-import os
-import platform
-import logging
-
-if platform.platform().startswith('Windows'):
-    logging_file = os.path.join(os.getenv('HOMEDRIVE'),
-                                os.getenv('HOMEPATH'),
-                                'test.log')
-else:
-    logging_file = os.path.join(os.getenv('HOME'),
-                                'test.log')
-
-print("Logging to", logging_file)
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s : %(levelname)s : %(message)s',
-    filename=logging_file,
-    filemode='w',
-)
-
-logging.debug("Start of the program")
-logging.info("Doing something")
-logging.warning("Dying now")
