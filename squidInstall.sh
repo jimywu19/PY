@@ -1,8 +1,11 @@
 #!/bin/bash
 
+#更新yum源
+rm -f /etc/yum.repos.d/*
+curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+
 #安装squid
-yum install -y squid
-yum install -y httpd-tools
+yum install -y squid httpd-tools
 
 #修改配置文件
 sed -i '/http_access deny all/d' "/etc/squid/squid.conf"
@@ -17,7 +20,7 @@ http_access deny all
 EOF
 
 #增加用户
-htpasswd -bc /etc/squid/passwd zhangsanfeng 123456@#  >>/dev/null 2>&1
+htpasswd -bc /etc/squid/passwd zhangsanfeng z1VrlD46V1Gj  >>/dev/null 2>&1
 
 #增加自启动，运行
 systemctl enable squid
