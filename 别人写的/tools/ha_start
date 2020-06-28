@@ -1,0 +1,86 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:       ha
+# Required-Start: network rpcbind
+# Should-Start:   
+# Required-Stop:  network rpcbind
+# Should-Stop:    
+# Default-Start:  2 3 5
+# Default-Stop:
+# Description:    Start the ha daemons
+### END INIT INFO
+
+################################################
+# init log
+################################################
+cd "$(dirname $0)"
+CUR_PATH=$(pwd)
+declare -r ScriptName=`basename $0`
+
+. /etc/profile 2>/dev/null
+. $HA_DIR/tools/func/func.sh || { echo "fail to load $CUR_PATH/func/func.sh"; exit 1; }
+mkdir -p $_HA_SH_LOG_DIR_
+LOG_FILE=$_HA_SH_LOG_DIR_/ha_monitor.log
+
+. $HA_DIR/tools/func/dblib.sh 
+
+
+RM_FAILCOUNT_DIR=$HA_DATA_DIR/rm/failcount
+
+#################################################
+
+die()
+{
+    ECHOANDLOG_ERROR "$*"
+    exit 1
+}
+
+start()
+{
+    $HA_DIR/tools/haStartAll.sh -r onboot >> $LOG_FILE 2>&1
+    ret=$?
+    LOG_INFO "haStartAll start return $ret"
+    
+    # 清除资源故障次数统计临时文件
+    rm -f $RM_FAILCOUNT_DIR/*
+    
+    if [ "-${DUALMODE}" = "-1" ];then
+        # 下电后的启动设置标志位
+        haStart4PowerMgr
+    fi
+    
+    exit $ret
+}
+
+stop()
+{
+    $GMN_BIN_DIR/ommonitor_monitor.sh stop  >> $LOG_FILE 2>&1
+    ret=$?
+    LOG_INFO "service heartbeat stop return $ret"
+    exit $ret
+}
+
+status()
+{
+    $GMN_BIN_DIR/ommonitor_monitor.sh status  >> $LOG_FILE 2>&1
+    ret=$?
+    LOG_INFO "service heartbeat status return $ret"
+    exit
+}
+
+case "$1" in
+    start)
+    start
+    ;;
+    stop)
+    stop
+    ;;
+    status)
+    status
+    ;;
+    *)
+    echo "Usage: $0 {start|stop|status}"
+    exit 1
+    ;;
+esac

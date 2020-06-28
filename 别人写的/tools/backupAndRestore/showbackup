@@ -1,0 +1,62 @@
+#!/bin/bash
+set +x
+#
+# /etc/init.d/backupdb
+#
+# description: backup gaussdb service
+# processname: backupdb
+#
+### BEGIN INIT INFO
+# Provides: gaussdb
+# Required-Start: gaussdb cron
+# Description: Start the gaussdb daemon
+### END INIT INFO
+source /etc/profile 2>/dev/null
+
+backupPath="$HA_DIR/tools/backupAndRestore"
+BACKUPDB_BIN=$backupPath/backup_db_restore_fun.sh
+BAK_COM_FUNC=$backupPath/com_fun.sh
+chmod 750 $BACKUPDB_BIN
+test -x $BACKUPDB_BIN || exit 5
+
+. /etc/rc.status
+
+# Shell functions sourced from /etc/rc.status:
+#      rc_check         check and set local and overall rc status
+#      rc_status        check and set local and overall rc status
+#      rc_status -v     ditto but be verbose in local rc status
+#      rc_status -v -r  ditto and clear the local rc status
+#      rc_failed        set local and overall rc status to failed
+#      rc_reset         clear local rc status (overall remains)
+#      rc_exit          exit appropriate to overall rc status
+
+. $BACKUPDB_BIN
+. $BAK_COM_FUNC
+
+# First reset status of this service
+rc_reset
+
+is_primary
+retRes=$?
+if [ $retRes -eq 1 ]; then
+    echo " This is standby node, backup should execute in primary node ! "
+    exit 1
+fi
+
+if [ $# -gt 1 ]; then
+    echo "The num of input parameter is null or timeline"
+    exit 1
+fi
+
+if [ -z $1 ]; then
+    do_show
+elif [ $1 = "timeline" -o $1 = "t" ]; then
+    do_show timeline
+else
+    echo "Usage: showbackup"
+    echo "       showbackup t"
+    echo "       showbackup timeline"
+    exit 1
+fi
+
+rc_exit

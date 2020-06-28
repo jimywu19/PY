@@ -1,0 +1,63 @@
+#!/bin/bash
+set +x 
+
+# Copyright (c) 2012-2014 CloudOS Huawei, China.
+
+source /etc/profile 2>/dev/null
+fpr1nt="$fpr1nt@$$"
+
+. $HA_DIR/tools/func/globalvar.sh || { echo "fail to load $HA_DIR/tools/func/globalvar.sh"; exit 1; }
+g_psql_passwd_file="$BASE_DIR/data/config/DBKey.cfg"
+g_psql_passwd_e=""
+g_psql_passwd_d=""
+
+function getPasswd()
+{
+    if [ ! -f ${g_psql_passwd_file} ]
+    then 
+        echo "g_psql_passwd_file not exit"
+        return 1
+    fi
+    
+    g_psql_passwd_e=$(grep "^$GSDB_ROLE:" $g_psql_passwd_file | sed "s/^$GSDB_ROLE://")  
+    g_psql_passwd_d=$(/usr/local/bin/pwswitch -d "$g_psql_passwd_e" -fp "$fpr1nt")    
+    return 0
+}
+
+getPasswd
+
+case "$1" in
+    stop)
+        echo "Shutting down gaussdb daemon"
+        su - $DB_USER -c "gs_ctl stop -P $g_psql_passwd_d"
+        # Remember status and be verbose
+        rc_status -v
+        ;;
+    status)
+        ## Check status with checkproc(8), if process is running
+        ## checkproc will return with exit status 0.
+
+        # Status has a slightly different for the status command:
+        # 0 - service running
+        # 1 - service dead, but /var/run/  pid  file exists
+        # 2 - service dead, but /var/lock/ lock file exists
+        # 3 - service not running
+        echo "Checking for service gaussdb "
+        su - $DB_USER -c "gs_ctl status -P $g_psql_passwd_d" 2>/dev/null
+        if [ $? -ne 0 ]
+            then rc_failed 3
+        fi
+        rc_status -v
+        ;;
+    query)
+        su - $DB_USER -c "gs_ctl query -P $g_psql_passwd_d"
+        ;;
+    switch)
+        su - $DB_USER -c "gs_ctl switchover -P $g_psql_passwd_d"
+        exit $?
+        ;;
+        *)
+        echo "Usage: $0 {stop|status|query}"
+        exit 1
+        ;;
+esac

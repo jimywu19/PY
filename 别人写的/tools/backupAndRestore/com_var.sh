@@ -1,0 +1,2 @@
+BACKUP_PATH="/opt/backup"
+RMAN_BACKUP_PATH="$BACKUP_PATH/rmanBackup"
