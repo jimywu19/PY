@@ -61,7 +61,7 @@ def main():
     os.chdir(sourcedir)
     filenames = os.listdir(sourcedir)
     for filename in filenames:
-        copy(filename,bakdir)
+        #copy(filename,bakdir)
         newname = add_suffix(filename,'.txt')
         copy(newname,destdir)
         os.remove(newname)

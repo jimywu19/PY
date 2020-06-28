@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+from scrapy.selector import Selector
 from maoyanreying.items import MaoyanreyingItem
 
 class MaoyanSpider(scrapy.Spider):
@@ -8,7 +9,7 @@ class MaoyanSpider(scrapy.Spider):
     start_urls = ['http://maoyan.com/board/7/']
 
     def parse(self, response):
-        dl = response.css('.board-wrapper dd')
+        dl = Selector(response.css('.board-wrapper dd'))
         for dd in dl:
             item = maoyanreyingItem()
             item['index'] = dd.css('.board-index::text').extract_first()
@@ -18,3 +19,4 @@ class MaoyanSpider(scrapy.Spider):
             item['score'] = dd.css('.integer::text').extract_first() + dd.css('.fraction::text').extract_first()
             yield item
 
+Selector()
