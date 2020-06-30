@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+#########################################
+#
+# 单机模式部署快速部署fastdfs
+#
+#  auther: jimywu
+#  2020.6.30
+#
+#########################################
+
 
 FASTDFS_BASE=/home/wb/fastdfs
 FASTDFS_TMP=/home/wb/tmp
@@ -15,7 +24,7 @@ plain='\033[0m'
 #当前用户ROOT判断,非root打印提示信息并退出
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] This script must be run as root!" && exit 1
 
-yum install -y wget
+yum install git gcc gcc-c++ make automake autoconf libtool pcre pcre-devel zlib zlib-devel openssl-devel wget vim -y
 
 # install fastdfs
 
@@ -139,4 +148,5 @@ systemctl start firewalld
 firewall-cmd --add-port=${HTTP_PORT}/tcp --permanent
 firewall-cmd --add-port=22122/tcp --permanent
 firewall-cmd --add-port=23000/tcp --permanent
+firewall-cmd --add-port=22/tcp --permanent
 firewall-cmd --reload
