@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-yum install -y wget vim
+[ ! -x /usr/bin/wget ] && yum install -y wget
+[ ! -x /usr/bin/vim ] && yum install -y vim
 
 # install Mysql
-mysql_home=/usr/local/Mysql
+mysql_home="/usr/local/Mysql"
+mysql_port=3306
 
 mkdir $mysql_home
 cd $mysql_home
@@ -22,7 +24,17 @@ wget -i mysql_download_url
 rpm -ivh mysql-community* --nodeps --force
 echo -e "\ncharacter_set_server=utf8mb4" >> /etc/my.cnf
 
+tmp_password=$(grep "temporary password" /var/log/mysqld.log|awk '{print $11}')
+
 systemctl start mysqld
 systemctl enable mysqld
 
+systemctl enable firewalld
+systemctl start firewalld
+firewall-cmd --add-port=${mysql_port}/tcp --permanent
+firewall-cmd --add-port=22/tcp --permanent
+firewall-cmd --reload
+
+echo -e "Mysql数据库已经安装成功。"
+echo -e "数据库初始密码是：\033[0;31m$tmp_password\033[0m ,请及时修改！"
 
