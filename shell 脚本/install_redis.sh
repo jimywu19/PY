@@ -21,12 +21,12 @@ sed -i "s/# requirepass .*/requirepass $REDIS_PASSWD/" /etc/redis.conf
 
 
 sed -i "s#^net.core.somaxconn.*#net.core.somaxconn=1024#" /etc/sysctl.conf
-sed -d "s#^vm.overcommit_memory.*#vm.overcommit_memory=1#" /etc/sysctl.conf
+sed -i "s#^vm.overcommit_memory.*#vm.overcommit_memory=1#" /etc/sysctl.conf
 
 echo "net.core.somaxconn=1024" >> /etc/sysctl.conf
 echo "vm.overcommit_memory=1" >> /etc/sysctl.conf
 sysctl -p
 
-echo "never > /sys/kernel/mm/transparent_hugepage/enabled" >>/etc/rc.local
+echo "echo never > /sys/kernel/mm/transparent_hugepage/enabled" >>/etc/rc.local
 
 redis-server /etc/redis.conf
