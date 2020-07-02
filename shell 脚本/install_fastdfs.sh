@@ -11,7 +11,7 @@
 
 
 FASTDFS_BASE=/home/wb/fastdfs
-FASTDFS_TMP=/home/wb/tmp
+FASTDFS_TMP=/tmp/fastdfs
 LOCAL_IP=$(ifconfig eth0 |grep -w inet|awk '{print $2}')
 HTTP_PORT=8888
 
@@ -150,3 +150,7 @@ firewall-cmd --add-port=22122/tcp --permanent
 firewall-cmd --add-port=23000/tcp --permanent
 firewall-cmd --add-port=22/tcp --permanent
 firewall-cmd --reload
+
+rm -rf $FASTDFS_TMP
+
+echo -e "已成功按照fastdfs 单机模式！"

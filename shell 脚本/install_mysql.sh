@@ -4,11 +4,11 @@
 [ ! -x /usr/bin/vim ] && yum install -y vim
 
 # install Mysql
-mysql_home="/usr/local/Mysql"
-mysql_port=3306
+MYSQL_TMP="/tmp/mysql"
+MYSQL_PORT=3306
 
-mkdir $mysql_home
-cd $mysql_home
+mkdir $MYSQL_DIR
+cd $MYSQL_DIR
 
 cat >mysql_download_url <<EOF
 http://183.131.202.100:8100/soft2/Mysql/mysql-community-client-5.7.28-1.el7.x86_64.rpm
@@ -31,9 +31,11 @@ systemctl enable mysqld
 
 systemctl enable firewalld
 systemctl start firewalld
-firewall-cmd --add-port=${mysql_port}/tcp --permanent
+firewall-cmd --add-port=${MYSQL_PORT}/tcp --permanent
 firewall-cmd --add-port=22/tcp --permanent
 firewall-cmd --reload
+
+rm -rf $MYSQL_TMP
 
 echo -e "Mysql数据库已经安装成功。"
 echo -e "数据库初始密码是：\033[0;31m$tmp_password\033[0m ,请及时修改！"
