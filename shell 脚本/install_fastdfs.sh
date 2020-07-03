@@ -12,7 +12,6 @@
 
 FASTDFS_BASE=/home/wb/fastdfs
 FASTDFS_TMP=/tmp/fastdfs
-LOCAL_IP=$(ifconfig eth0 |grep -w inet|awk '{print $2}')
 HTTP_PORT=8888
 
 #颜色字体
@@ -24,7 +23,10 @@ plain='\033[0m'
 #当前用户ROOT判断,非root打印提示信息并退出
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] This script must be run as root!" && exit 1
 
-yum install git gcc gcc-c++ make automake autoconf libtool pcre pcre-devel zlib zlib-devel openssl-devel wget vim -y
+yum install git gcc gcc-c++ make automake autoconf libtool pcre pcre-devel zlib zlib-devel openssl-devel vim -y
+#yum -y install  gcc pcre‐devel openssl‐devel zlib‐devel make
+ifconfig &>/dev/null ||yum install -y net-tools
+LOCAL_IP=$(ifconfig |grep -w inet|grep -v 127.0.0.1 |awk '{print $2}')
 
 # install fastdfs
 
@@ -33,10 +35,10 @@ yum install git gcc gcc-c++ make automake autoconf libtool pcre pcre-devel zlib 
 
 #下载安装文件源代码
 cd $FASTDFS_TMP
-wget http://183.131.202.100:8100/soft2/FastDFS/fastdfs-5.11.tar.gz
-wget http://183.131.202.100:8100/soft2/FastDFS/libfastcommon-1.0.39.tar.gz
-wget http://183.131.202.100:8100/soft2/FastDFS/fastdfs-nginx-module-1.20.tar.gz
-wget http://183.131.202.100:8100/soft2/FastDFS/nginx-1.16.0.tar.gz
+curl -O http://183.131.202.100:8100/soft2/FastDFS/fastdfs-5.11.tar.gz
+curl -O http://183.131.202.100:8100/soft2/FastDFS/libfastcommon-1.0.39.tar.gz
+curl -O http://183.131.202.100:8100/soft2/FastDFS/fastdfs-nginx-module-1.20.tar.gz
+curl -O http://183.131.202.100:8100/soft2/FastDFS/nginx-1.16.0.tar.gz
 
 tar xf fastdfs-5.11.tar.gz
 tar xf libfastcommon-1.0.39.tar.gz
@@ -56,24 +58,11 @@ cp $FASTDFS_TMP/fastdfs-nginx-module-1.20/src/mod_fastdfs.conf /etc/fdfs
 cd ../nginx-1.16.0
 sed -i "s#/usr/local/include#/usr/include/fastdfs /usr/include/fastcommon/#"  $FASTDFS_TMP/fastdfs-nginx-module-1.20/src/config
 ./configure \
---with-debug \
---with-pcre-jit \
 --with-http_ssl_module \
---with-http_stub_status_module \
---with-http_realip_module \
---with-http_auth_request_module \
---with-http_addition_module \
---with-http_dav_module \
 --with-http_gunzip_module \
 --with-http_gzip_static_module \
---with-http_v2_module \
---with-http_sub_module \
---with-stream \
---with-stream_ssl_module \
---with-mail \
---with-threads \
 --add-module=$FASTDFS_TMP/fastdfs-nginx-module-1.20/src
-make && make install
+make  && make install
 ln -s /usr/local/nginx/sbin/nginx /usr/sbin/nginx
 
 #创建更新nginx配置文件

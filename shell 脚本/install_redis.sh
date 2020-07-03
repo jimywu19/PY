@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[ ! -x /usr/bin/wget ] && yum install -y wget
+#[ ! -x /usr/bin/wget ] && yum install -y wget
 [ ! -x /usr/bin/vim ] && yum install -y vim
 [ ! -x /usr/bin/gcc ] && yum install -y gcc
 
@@ -14,7 +14,7 @@ REDIS_PASSWD=$(head /dev/urandom|base64|sed 's/[^A-Za-z0-9]//g'|cut -c1-10|head 
 cd $REDIS_TMP
 
 #下载安装
-wget http://183.131.202.100:8100/soft2/redis-3.2.1.tar.gz
+curl -O http://183.131.202.100:8100/soft2/redis-3.2.1.tar.gz
 tar xf redis-3.2.1.tar.gz
 cd redis-3.2.1
 make && make install
@@ -22,7 +22,7 @@ make && make install
 #修改配置文件
 cp redis.conf /etc/redis.conf
 sed -i "s/^daemonize no/daemonize yes/" /etc/redis.conf 
-sed -i "s/^#requirepass .*/requirepass $REDIS_PASSWD/" /etc/redis.conf
+sed -i "s/^# requirepass .*/requirepass $REDIS_PASSWD/" /etc/redis.conf
 sed -i "s/^port.*/port $REDIS_PORT/" /etc/redis.conf
 sed -i "s/^\(bind.*\)/#\1/" /etc/redis.conf
 
