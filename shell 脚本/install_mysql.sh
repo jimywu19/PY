@@ -7,8 +7,8 @@
 MYSQL_TMP="/tmp/mysql"
 MYSQL_PORT=3306
 
-mkdir $MYSQL_DIR
-cd $MYSQL_DIR
+mkdir $MYSQL_TMP
+cd $MYSQL_TMP
 
 cat >mysql_download_url <<EOF
 http://183.131.202.100:8100/soft2/Mysql/mysql-community-client-5.7.28-1.el7.x86_64.rpm
@@ -24,10 +24,10 @@ wget -i mysql_download_url
 rpm -ivh mysql-community* --nodeps --force
 echo -e "\ncharacter_set_server=utf8mb4" >> /etc/my.cnf
 
-tmp_password=$(grep "temporary password" /var/log/mysqld.log|awk '{print $11}')
-
 systemctl start mysqld
 systemctl enable mysqld
+
+tmp_password=$(grep "temporary password" /var/log/mysqld.log|awk '{print $11}')
 
 systemctl enable firewalld
 systemctl start firewalld
