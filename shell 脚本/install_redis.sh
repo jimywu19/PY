@@ -24,7 +24,8 @@ cp redis.conf /etc/redis.conf
 sed -i "s/^daemonize no/daemonize yes/" /etc/redis.conf 
 sed -i "s/^# requirepass .*/requirepass $REDIS_PASSWD/" /etc/redis.conf
 sed -i "s/^port.*/port $REDIS_PORT/" /etc/redis.conf
-sed -i "s/^\(bind.*\)/#\1/" /etc/redis.conf
+#sed -i "s/^\(bind.*\)/#\1/" /etc/redis.conf
+sed -i "s/^bind.*/#&/" /etc/redis.conf
 
 #内核参数优化
 sed -i "s#^net.core.somaxconn.*#net.core.somaxconn=1024#" /etc/sysctl.conf 2>/dev/null
