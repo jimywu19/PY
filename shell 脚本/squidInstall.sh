@@ -12,6 +12,9 @@ sed -i '/http_access deny all/d' "/etc/squid/squid.conf"
 sed -i 's/http_port 3128/http_port 31028/' "/etc/squid/squid.conf"
 
 cat >>/etc/squid/squid.conf <<EOF
+#关闭转发
+forwarded_for off
+
 # require user auth 
 auth_param basic program /usr/lib64/squid/basic_ncsa_auth /etc/squid/passwd
 acl auth_user proxy_auth REQUIRED
