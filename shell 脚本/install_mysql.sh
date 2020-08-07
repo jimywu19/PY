@@ -7,7 +7,7 @@
 MYSQL_TMP="/tmp/mysql"
 MYSQL_PORT=3306
 
-mkdir $MYSQL_TMP
+[ -z $MYSQL_TMP ] && mkdir -p $MYSQL_TMP
 cd $MYSQL_TMP
 
 cat >mysql_download_url <<EOF
