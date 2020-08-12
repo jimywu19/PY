@@ -1,6 +1,8 @@
 import importlib
 import sys
 import time
+import re
+
 importlib.reload(sys)
 time1 = time.time()
 # print("初始时间为：",time1)
@@ -14,6 +16,16 @@ from pdfminer.pdfinterp import PDFTextExtractionNotAllowed
 
 # text_path = r'words-words.pdf'
 text_path = r'义数云平台资源交付单-蔡春江20200728G1.pdf'
+
+def getIp(text):
+    '''解析字段中的IP地址'''
+    string_ip = text
+    result = re.findall(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b", string_ip)
+    if result:
+        return result
+
+
+EIP = list()
 
 def parse():
     '''解析PDF文本，并保存到TXT文件中'''
@@ -51,9 +63,11 @@ def parse():
                 if(isinstance(x,LTTextBoxHorizontal)):
                     with open(r'2.txt','a') as f:
                         results = x.get_text()
-                        
-                        print(results)
-                        f.write(results  +"\n")
+                        ipAddress = getIp(results)
+                        if ipAddress:
+                            EIP.append(ipAddress)
+                            print(ipAddress)
+                        # f.writeEIP
 
 if __name__ == '__main__':
     parse()
