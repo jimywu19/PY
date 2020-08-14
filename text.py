@@ -6,12 +6,12 @@ from pdfminer.pdfparser import  PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, PDFTextExtractionNotAllowed
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBoxHorizontal,LAParams
-import camelot
+
 
 ##  Constants
 ROOT_DIR='D:\\Lenovo\\Documents\\py'
-#text_path = r'words-words.pdf'
-text_path = r'20义数云平台资源交付单--何旭1008_427309286238969.pdf'
+text_path = r'IP置换交付单-罗滨20200103E1.pdf'
+#text_path = r'20义数云平台资源交付单--何旭1008_427309286238969.pdf'
 outfile = '2.txt'
 
 def getIp(text):
@@ -23,7 +23,7 @@ def getIp(text):
 
 def parse(file,savefile):
     '''解析PDF文本，并保存到TXT文件中'''
-    EIP = []
+    EIPs = []
     fp = open(file,'rb')
     #用文件对象创建一个PDF文档分析器
     parser = PDFParser(fp)
@@ -47,27 +47,75 @@ def parse(file,savefile):
         interpreter = PDFPageInterpreter(rsrcmgr,device)
         #循环遍历列表，每次处理一个page内容
         # doc.get_pages() 获取page列表
+        p=0
         for page in doc.get_pages():
-            try :
-                interpreter.process_page(page)            
-                #接受该页面的LTPage对象
-                layout = device.get_result()
-                # 这里layout是一个LTPage对象 里面存放着 这个page解析出的各种对象
-                # 一般包括LTTextBox, LTFigure, LTImage, LTTextBoxHorizontal 等等
-                # 想要获取文本就获得对象的text属性，
-                for x in layout:
-                    if(isinstance(x,LTTextBoxHorizontal)):
-                        results = x.get_text().replace(" ","")
-                        ipAddress = getIp(results)
-                        if ipAddress:
-                            EIP.extend(ipAddress)
-            except:
-                continue
+            interpreter.process_page(page)
+            layout = device.get_result()
+            elts=[]
+            m = 0
+            mindeltaheight = 1000
+            """
+            breakdown lines into string (w/o \n) calculate new coordinates
+            """
+            for element in layout:
+                if isinstance(element, LTTextBoxHorizontal):
+                    x0 = element.x0
+                    y0 = element.y0
+                    x1 = element.x1
+                    y1 = element.y1
+                    print(element.get_text())
+                    lines = element.get_text().splitlines()
+                    lenlines = len(lines)
+                    j = 0
+                    deltaheight = (y1-y0)/lenlines
+                    if mindeltaheight > deltaheight:
+                        mindeltaheight = deltaheight
+                    for line in lines:
+                        x0j = x0
+                        y0j = y1 - (1+j)*deltaheight
+                        x1j = x1
+                        y1j = y1 - j*deltaheight
+                        j += 1
+                        elts.append({"x1":x1j,"y1":y1j,"x0":x0j,"y0":y0j,"txt":line})
+                    if m < element.y1:
+                        m = element.y1
+            n = len(elts)
+            """
+            tune strings coordinate to get them aligned in the same "line" if not too far apart 
+            (less than 1/2 the min line height of the page)
+            """
+            for i in range(1,n):
+                for j in range(i+1,n):
+                    if abs(elts[i-1]["y0"]-elts[j-1]["y0"])<(mindeltaheight/2):
+                        elts[j-1]["y0"] = elts[i-1]["y0"]
+                    if abs(elts[i-1]["y1"]-elts[j-1]["y1"])<(mindeltaheight/2):
+                        elts[j-1]["y1"] = elts[i-1]["y1"]
+                    
+            selts = sorted(elts, key=lambda item: (round((2*m-item['y0']-item['y1'])/2,0),round(item['x0'],0)))   
+            
+            # for elt in selts:
+            #    print(f"({p})({elt['x0']:0.0f},{elt['y0']:0.0f},{elt['x1']:0.0f},{elt['y1']:0.0f}){elt['txt']}")
+            # if not callback(p,selts,context):
+            #     return
+               
+            p +=1
+            for elt in selts:
+                results = elt['txt'].replace(" ","")
+            #     if results == '业务开通日期:':
+
+            #     elif results == '联系人:':
+
+            #     else：
+                ipAddress = getIp(results)
+                if ipAddress:
+                    EIPs.extend(ipAddress)
+            # except:
+            #     continue
     fp.close
 
     with open(savefile,'a') as f:
-        for line in EIP:
-            f.write(line+"\n")
+        for eip in EIPs:
+            f.write(eip+"\n")
 
 if __name__ == '__main__':
 
