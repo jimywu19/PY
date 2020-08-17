@@ -1,5 +1,7 @@
 from imaplib import IMAP4
 from justmencrypt import decrypt
+from os.path import isfile
+import re  
 
 MAIL_USER = "wujy@zjbdos.com"
 MAIL_PASS = "AIDKHKDLKIJPIPLP"
@@ -42,6 +44,7 @@ class down_email():
             if charset:
                 content = content.decode(charset)
         return content
+    
 
     # 字符编码转换
     # @staticmethod
@@ -52,7 +55,7 @@ class down_email():
         return value
 
     # 解析邮件,获取附件
-    def get_att(self,msg_in, str_day):
+    def get_att(self,msg_in):
         attachment_files = []
         for part in msg_in.walk():
             # 获取附件名称类型
@@ -87,7 +90,8 @@ class down_email():
         return attachment_files
 
     def run_ing(self):
-        str_day = str(datetime.date.today())# 日期赋值
+        
+        global mark_time
         # 连接到POP3服务器,有些邮箱服务器需要ssl加密，可以使用poplib.POP3_SSL
         try:
             telnetlib.Telnet(self.pop3_server, 995)
@@ -107,8 +111,9 @@ class down_email():
         # list()返回所有邮件的编号:
         resp, mails, octets = self.server.list()
         # 可以查看返回的列表类似[b'1 82923', b'2 2184', ...]
-        print(mails)
+        #print(mails)
         index = len(mails)
+        mark = 1
         for i in range(index, 0, -1):# 倒序遍历邮件
         # for i in range(1, index + 1):# 顺序遍历邮件
             resp, lines, octets = self.server.retr(i)
@@ -127,32 +132,49 @@ class down_email():
             To = parseaddr(msg.get('To'))[1]
             Cc=parseaddr(msg.get_all('Cc'))[1]# 抄送人
             Subject = self.decode_str(msg.get('Subject'))
-            print('from:%s,to:%s,Cc:%s,subject:%s'%(From,To,Cc,Subject))
-            # 获取邮件时间,格式化收件时间
-            date1 = time.strptime(msg.get("Date")[0:24], '%a, %d %b %Y %H:%M:%S')
             
+            #print('from:%s,to:%s,Cc:%s,subject:%s'%(From,To,Cc,Subject))
+            # 获取邮件时间,格式化收件时间         
+            date1 = time.strptime(msg.get("Date")[0:25], '%a, %d %b %Y %H:%M:%S')
             # 邮件时间格式转换
-            date2 = time.strftime("%Y-%m-%d",date1)
-            if date2 < str_day:
+            date2 = time.strftime("%Y-%m-%d %H:%M:%S",date1)
+            date3 = time.mktime(date1)
+            # 最新邮件时间保存
+            if mark :                
+                mark_time.append(date3)
+                mark =0                        
+                        
+            if date3 <= mark_time[0]:
                 break # 倒叙用break
                 # continue # 顺叙用continue
             else:
                 # 获取附件
-                attach_file=self.get_att(msg,str_day)
+                if re.findall('交付单', Subject):
+                    attach_file=self.get_att(msg)
                 ##print(attach_file)
 
         # 可以根据邮件索引号直接从服务器删除邮件:
         # self.server.dele(7)
         self.server.quit()
 
-
 if __name__ == '__main__':
     #把打印内容输出到文件
     # origin = sys.stdout
     # f = open('./test/log.txt', 'w')
     # sys.stdout = f
-    global mark_time
-    n = input("请输入解密码:")
+    mark_time = []
+    #str_day = str(datetime.date.today())# 日期赋值
+    str_daytime = int(time.time())
+    MARK_TIME_FILE = 'D:\\Lenovo\\Documents\\py\\marktime.txt'
+
+    n = int(input("请输入解密码:"))
+    if  isfile(MARK_TIME_FILE):
+        f=open(MARK_TIME_FILE,'r')
+        mark_time.append(float(f.readline()))
+        f.close        
+    else :
+        mark_time.append(str_daytime) 
+     
 
     try:
         # 输入邮件地址, 口令和POP3服务器地址:
@@ -165,6 +187,8 @@ if __name__ == '__main__':
         # eamil_server = 'pop.exmail.qq.com'
         email_class=down_email(user=MAIL_USER,password=decrypt(n,MAIL_PASS),eamil_server=imap_server)
         email_class.run_ing()
+        with open(MARK_TIME_FILE,'w') as f:
+            f.write(str(mark_time[1]))
     except Exception as e:
         import traceback
         ex_msg = '{exception}'.format(exception=traceback.format_exc())
