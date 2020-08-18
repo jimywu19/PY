@@ -1,10 +1,8 @@
 #coding = 'UTF-8'
-# from configfile.py import *
-
 
 import os
-from os.path import join,dirname,basename,abspath,splitext,isdir,isfile,expandvars
-from shutil import copy
+from os.path import join,dirname,basename,abspath,splitext,expandvars
+from shutil import move
 
 def get_names(file_path):
     file_path = abspath(file_path)  # 获取这个文件/文件夹的绝对路径
@@ -42,14 +40,12 @@ def decodefile(full_path_filename):
 
     os.chdir(a_path)
     tmp_fullpath_file = add_suffix(full_path_filename,".txt") #加后缀
-    
-    copy(tmp_fullpath_file,des_path)                        #拷出
     tmp_file = basename(tmp_fullpath_file)
-    os.remove(tmp_fullpath_file)                          #删除源
 
+    move(tmp_fullpath_file,des_path)                        #拷出
+    
     des_tmp_fullpath_file = join(des_path,tmp_file)
-    copy(des_tmp_fullpath_file,a_path)                #拷回
-    os.remove(des_tmp_fullpath_file)
+    move(des_tmp_fullpath_file,a_path)                #拷回
 
     de_file = del_suffix(tmp_fullpath_file,".txt")  #删后缀
     return de_file
@@ -62,8 +58,3 @@ def decodedir(dir):
         de_file = decodefile(fullpathfile)
         de_files.append(de_file)
     return de_files
-
-
-
-
-
