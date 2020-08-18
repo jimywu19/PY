@@ -3,7 +3,7 @@
 
 
 import os
-from os.path import join,dirname,basename,abspath,splitext,isdir,isfile
+from os.path import join,dirname,basename,abspath,splitext,isdir,isfile,expandvars
 from shutil import copy
 
 def get_names(file_path):
@@ -35,28 +35,31 @@ def del_suffix(file_path, suffix):  # 为file_path删除preffix后缀 并返回�
     else:
         return file_path
 
-def decodefile(file,de_dir):
+def decodefile(full_path_filename):
 
-    if not isdir(de_dir):
-        os.mkdir(de_dir)
-    mydirname = dirname(file)
-    os.chdir(mydirname)
-    newname = add_suffix(file,".txt")
-    copy(newname,de_dir)
-    base_newname = basename(newname)
-    os.remove(newname)
+    des_path = expandvars("%TMP%")
+    a_path = dirname(full_path_filename)
 
-    os.chdir(de_dir)
-    de_newname = join(de_dir,base_newname)
-    de_file = del_suffix(de_newname,".txt")
+    os.chdir(a_path)
+    tmp_fullpath_file = add_suffix(full_path_filename,".txt") #加后缀
+    
+    copy(tmp_fullpath_file,des_path)                        #拷出
+    tmp_file = basename(tmp_fullpath_file)
+    os.remove(tmp_fullpath_file)                          #删除源
+
+    des_tmp_fullpath_file = join(des_path,tmp_file)
+    copy(des_tmp_fullpath_file,a_path)                #拷回
+    os.remove(des_tmp_fullpath_file)
+
+    de_file = del_suffix(tmp_fullpath_file,".txt")  #删后缀
     return de_file
 
-def decodedir(dir,de_dir):
+def decodedir(dir):
 
     de_files = []
     for file in os.listdir(dir):
         fullpathfile = os.path.join(dir,file)
-        de_file = decodefile(fullpathfile,de_dir)
+        de_file = decodefile(fullpathfile)
         de_files.append(de_file)
     return de_files
 
