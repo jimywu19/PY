@@ -1,19 +1,14 @@
 from os.path import abspath, dirname, join
 import re
 import os
+import json
 
 from pdfminer.pdfparser import  PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, PDFTextExtractionNotAllowed
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBoxHorizontal,LAParams
 
-##  Constants
 base_path = abspath(dirname(__file__))
-
-ROOT_DIR = join(base_path,'mail') 
-# text_path = r'IP置换交付单-罗滨20200103E1.pdf'
-#text_path = r'20义数云平台资源交付单--何旭1008_427309286238969.pdf'
-outfile = '2.txt'
 
 def getIp(text):
     '''解析字段中的IP地址'''
@@ -25,6 +20,7 @@ def getIp(text):
 def parse(file,savefile):
     '''解析PDF文本，并保存到TXT文件中'''
     EIPs = []
+    result = dict()
     fp = open(file,'rb')
     #用文件对象创建一个PDF文档分析器
     parser = PDFParser(fp)
@@ -100,23 +96,25 @@ def parse(file,savefile):
             #     return
                
             p +=1
-            for elt in selts:
-                results = elt['txt'].replace(" ","")
-            #     if results == '业务开通日期:':
-
-            #     elif results == '联系人:':
-
-            #     else：
-                ipAddress = getIp(results)
-                if ipAddress:
-                    EIPs.extend(ipAddress)
-            # except:
-            #     continue
+            elt_len = len(selts)
+            
+            for x in range(elt_len):
+                if selts[x]['txt'] == '联系人：':
+                    result['联系人'] = selts[x+1]['txt']
+                elif selts[x]['txt'] == '业务开通日期：':
+                    result['开通日期'] = selts[x+1]['txt']
+                else:
+                    # ipAddress = getIp(selts[x]['txt'].replace(" ",""))
+                    ipAddress = getIp(selts[x]['txt'])
+                    if ipAddress:
+                        EIPs.extend(ipAddress)
+                    result['eip'] = EIPs
+        
     fp.close
     os.chdir(base_path)
     with open(savefile,'a') as f:
-        for eip in EIPs:
-            f.write(eip+"\n")
+        json.dump(result, f, ensure_ascii=False)
+
 
 def parsedir(dir,outfile):
     for root,dirs,files in os.walk(dir):
@@ -128,11 +126,19 @@ def parsedir(dir,outfile):
 
 if __name__ == '__main__':
 
-    # parse(text_path,outfile)
-    for root,dirs,files in os.walk(ROOT_DIR):
-        for filename in files:
-            if filename.endswith('.pdf'):
-                absname = os.path.join(root,filename)
-                parse(absname,outfile)
-                os.remove(absname)
+    ##  Constants
+    
+
+    # ROOT_DIR = join(base_path,'mail') 
+    text_path = r'义数云平台资源交付单-蔡春江20200728G1.pdf'
+    #text_path = r'20义数云平台资源交付单--何旭1008_427309286238969.pdf'
+    outfile = '2.json'
+
+    parse(text_path,outfile)
+    # for root,dirs,files in os.walk(ROOT_DIR):
+    #     for filename in files:
+    #         if filename.endswith('.pdf'):
+    #             absname = os.path.join(root,filename)
+    #             parse(absname,outfile)
+    #             os.remove(absname)
 
