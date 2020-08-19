@@ -156,11 +156,14 @@ if __name__ == '__main__':
     mark_time_filename = os.path.join(base_path,'marktime.txt')
     savedir = 'mail' #附件保存的相对目录
     mailpath = join(base_path,savedir)
-    datafile = '5.txt'
+    datafile = '61.json'
 
     #开始收取邮件
     mark_time = []
-    str_daytime = int(time.time())    
+    daystr = input("请输入开始收件日期：格式：月份/日期\n" )
+    daystr1 = "2020" + "/" + daystr + " " + "0:0:0"     
+    daystr2 =time.strptime(daystr1, '%Y/%m/%d %H:%M:%S')
+    str_daytime =  time.mktime(daystr2)   
     # n = int(input("请输入解密码:"))
     n=int(202)
 
