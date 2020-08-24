@@ -60,7 +60,16 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
 
 
 ######## mysql 存取
+#example 1
+# (本机，数据库名lilybbs, 表名 hunan_a)
+import  MySQLdb
+db=mysqldb.connect(host = 'localhost', user = "root", passwd="0101", db = "lilybbs", use_unicode = 1, charset = "utf8")
+cursor = db.cursor()
+写入
+for i in range(20):
+    cursor.execute("insert into hunan_a values (%s, %s, %s, %s, %s, %s, %s, %s)", (id[i], 'h', index[i], time1[i], size[i], hit[i], lz[i], title1[i]))
 
+# example 2
 import pymysql
 from pymysql import Error
 
@@ -98,8 +107,8 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
     finally:
         conn.close()
 
-######### 遍历windows目录
 
+######### 遍历windows目录
 import os
 
 # root = '%s%s%s' % ('..', os.path.sep, 'food')
@@ -162,7 +171,7 @@ logging.warning("Dying now")
 ####  正则匹配使用
 import re
 
-#第一种格式
+#example 1
 string = "我爱北京天安门！"
 pattern = re.compile('[\u4e00-\u9fa5]+')   #[\u4e00-\u9fa5]是匹配所有中文的正则 
 pattern1 = re.compile('\d{6}')
@@ -170,16 +179,30 @@ pattern1 = re.compile('\d{6}')
 result = pattern.findall(string)
 result1 = re.findall(pattern, string)
 
-#第二种格式
+#example 2
  m1 = re.match(r'^[0-9a-zA-Z_]{6,20}$', username)
 
 
-### 多线程的处理、
+#### 多线程的处理
+## example 1
 from functools import  partial
 from multiprocessing.dummy import Pool as ThreadPool
 
 partial = partial(portScan,port=port)
 pool = ThreadPool(10)
 pool.map(partial,rdp_hosts)
+##example 2
+import thread
+for x in range(0,threads):
+    thread.start_new_thread(synflood,(target,port))
 
 
+#####参数检查
+if len(sys.argv) != 4:
+    print "用法: ./syn_flood.py [IP地址] [端口] [线程数]"
+    print "举例: ../syn_flood.py  1.1.1.1 80 20"
+    sys.exit()
+####参数读取方法
+target = str(sys.argv[1])
+port= int(sys.argv[2])
+threads = int(sys.argv[3])
