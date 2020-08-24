@@ -44,7 +44,7 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
 
 
 
-#mysql 存取
+####   mysql 存取
 
 import pymysql
 from pymysql import Error
@@ -82,3 +82,18 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
         # logging.error('SQL:', error)
     finally:
         conn.close()
+
+####  正则匹配使用
+import re
+
+#第一种格式
+string = "我爱北京天安门！"
+pattern = re.compile('[\u4e00-\u9fa5]+')   #[\u4e00-\u9fa5]是匹配所有中文的正则 
+pattern1 = re.compile('\d{6}')
+
+result = pattern.findall(string)
+result1 = re.findall(pattern, string)
+
+
+#第二种格式
+ m1 = re.match(r'^[0-9a-zA-Z_]{6,20}$', username)
