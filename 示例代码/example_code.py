@@ -13,7 +13,7 @@ False
 #取文件下载的URL链接中文件名
 import requests
 url = 'https://github.com/jackfrued/Python-100-Days/blob/master/Day01-15/14.txt'
-filename = url[url.rfind('/') + :1]
+filename = url[url.rfind('/') + 1: ]
 print(filename)
 
 ##以对应的文件名保存url中的文件到本地，
@@ -105,6 +105,7 @@ import os
 # root = '%s%s%s' % ('..', os.path.sep, 'food')
 # dir = 'c:/users/jimywu/documents/project/food'
 dir = os.path.expandvars('%userprofile%\\document\\')
+#for root,dirs,files in os.walk()
 for  file_list in os.walk(dir):
     for name in file_list[2]:
         print('File: ' + name)
@@ -124,8 +125,14 @@ for i in range(50,100,3):
 turtle.mainloop()
 
 
-###########3 日志
+########### 日志
+#### example 1
+import logging
 
+logging.basicConfig(format='%(asctime)s %(levelname)s/%(lineno)dL: %(message)s', filename='backup.log', level=logging.DEBUG)
+logging.info(sys.argv)
+
+### example 2
 import os
 import platform
 import logging
@@ -150,3 +157,29 @@ logging.basicConfig(
 logging.debug("Start of the program")
 logging.info("Doing something")
 logging.warning("Dying now")
+
+
+####  正则匹配使用
+import re
+
+#第一种格式
+string = "我爱北京天安门！"
+pattern = re.compile('[\u4e00-\u9fa5]+')   #[\u4e00-\u9fa5]是匹配所有中文的正则 
+pattern1 = re.compile('\d{6}')
+
+result = pattern.findall(string)
+result1 = re.findall(pattern, string)
+
+#第二种格式
+ m1 = re.match(r'^[0-9a-zA-Z_]{6,20}$', username)
+
+
+### 多线程的处理、
+from functools import  partial
+from multiprocessing.dummy import Pool as ThreadPool
+
+partial = partial(portScan,port=port)
+pool = ThreadPool(10)
+pool.map(partial,rdp_hosts)
+
+
