@@ -106,6 +106,14 @@ def start_crawl(seed_url, match_pattern, *, max_depth=-1):
         # logging.error('SQL:', error)
     finally:
         conn.close()
+#example 3
+with con.cursor() as cursor:
+       result = cursor.execute(
+        'insert into tb_dept values (%s, %s, %s)',
+        (no, name, loc)
+    )
+con.commit()
+con.close()
 
 
 ######### 遍历windows目录
