@@ -17,18 +17,24 @@ def get_names(file_path):
 
 def add_suffix(file_path, suffix):  # 为file_path添加preffix后缀 并返回文件名绝对路径
     dir_name, filename, extension = get_names(file_path)
-    if extension != suffix:
-        new_name = dir_name + filename + extension + suffix
+    
+    new_name = dir_name + filename + extension + suffix
+    try: 
         os.rename(file_path, new_name)
-        return new_name
-    else:
-        return file_path
+    except:
+        print("file exist,continue")
+    return new_name
+    # else:
+    #     return file_path
 
 def del_suffix(file_path, suffix):  # 为file_path删除preffix后缀 并返回文件名绝对路径
     dir_name, filename, extension = get_names(file_path)
     if extension == suffix:  # 判断文件名是否以suffix结尾                
         new_name = dir_name + filename
-        os.rename(file_path, new_name)
+        try:
+            os.rename(file_path, new_name)
+        except:
+            print("error")     
         return new_name
     else:
         return file_path
@@ -36,25 +42,37 @@ def del_suffix(file_path, suffix):  # 为file_path删除preffix后缀 并返回�
 def decodefile(full_path_filename):
 
     des_path = expandvars("%TMP%")
-    a_path = dirname(full_path_filename)
+    source_path = dirname(full_path_filename)
 
-    os.chdir(a_path)
-    tmp_fullpath_file = add_suffix(full_path_filename,".txt") #加后缀
-    tmp_file = basename(tmp_fullpath_file)
+    os.chdir(source_path)
 
-    move(tmp_fullpath_file,des_path)                        #拷出
+    name, extension = splitext(full_path_filename)
+    if extension not in  [ ".exe", ".iso", ".zip", ".rar", ".sys"]:
+        tmp_fullpath_file = add_suffix(full_path_filename,".txt") #加后缀
+        tmp_file = basename(tmp_fullpath_file)
+
+        move(tmp_fullpath_file,des_path)                        #拷出
+        
+        des_tmp_fullpath_file = join(des_path,tmp_file)
+        move(des_tmp_fullpath_file,source_path)                #拷回
+
+        de_file = del_suffix(tmp_fullpath_file,".txt")  #删后缀
+        return de_file
+
+def decodedir(dir):   
+    # 单级目录
+    # de_files = []
+    # for file in os.listdir(dir):
+    #     fullpathfile = os.path.join(dir,file)
+    #     de_file = decodefile(fullpathfile)
+    #     de_files.append(de_file)
+    # return de_files
     
-    des_tmp_fullpath_file = join(des_path,tmp_file)
-    move(des_tmp_fullpath_file,a_path)                #拷回
-
-    de_file = del_suffix(tmp_fullpath_file,".txt")  #删后缀
-    return de_file
-
-def decodedir(dir):
-
+    #多级目录
     de_files = []
-    for file in os.listdir(dir):
-        fullpathfile = os.path.join(dir,file)
-        de_file = decodefile(fullpathfile)
-        de_files.append(de_file)
+    for m_dirpath, m_dirname, m_filenames in  os.walk(dir):
+        for file in m_filenames:
+            fullpathfile = os.path.join(m_dirpath,file)
+            de_file = decodefile(fullpathfile)
+            de_files.append(de_file)
     return de_files
