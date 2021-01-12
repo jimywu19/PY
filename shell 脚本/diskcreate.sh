@@ -1,6 +1,10 @@
 #!/usr/bin/bash
 
-# 可以带参数
+# 可以带参数说明
+# method 有add extend remove磁盘目录三种，磁盘目录必须是单独挂载的某个lv
+# size 磁盘大小，默认单位为M,所以 一般要写 xxG
+# mydir 磁盘目录，如/opt
+
 method=$1
 size=$2
 mydir=$3

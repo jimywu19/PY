@@ -203,6 +203,7 @@ pool.map(partial,rdp_hosts)
 import thread
 for x in range(0,threads):
     thread.start_new_thread(synflood,(target,port))
+    
 
 
 #####参数检查

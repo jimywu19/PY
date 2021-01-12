@@ -1,6 +1,7 @@
 
 # from genericpath import exists
 # from imaplib import IMAP4
+from time import mktime
 from justmencrypt import decrypt
 from file_decode import decodedir
 from getTextFromPDF import parsedir
@@ -149,7 +150,7 @@ class down_email():
 if __name__ == '__main__':
 
     MAIL_USER = "wujy@zjbdos.com"
-    MAIL_PASS = "AIDKHKDLKIJPIPLP"
+    MAIL_PASS = "PLMJIJMINMGMHMEM"
     imap_server = "imap.exmail.qq.com"
 
     base_path = abspath(dirname(__file__))
@@ -164,6 +165,10 @@ if __name__ == '__main__':
     daystr1 = "2020" + "/" + daystr + " " + "0:0:0"     
     daystr2 =time.strptime(daystr1, '%Y/%m/%d %H:%M:%S')
     str_daytime =  time.mktime(daystr2)   
+    if daystr and  daystr2 < time.mktime(time.time()):
+        os.remove('marktime.txt')
+
+
     # n = int(input("请输入解密码:"))
     n=int(202)
 
