@@ -29,6 +29,10 @@ sed -i "s/^bind.*/#&/" /etc/redis.conf
 
 #内核参数优化
 sed -i "s#^net.core.somaxconn.*#net.core.somaxconn=1024#" /etc/sysctl.conf 2>/dev/null
+# 内存分配策略,可选值：0、1、2,现改为1
+# 0， 表示内核将检查是否有足够的可用内存供应用进程使用；如果有足够的可用内存，内存申请允许；否则，内存申请失败，并把错误返回给应用进程。
+# 1， 表示内核允许分配所有的物理内存，而不管当前的内存状态如何。
+# 2， 表示内核允许分配超过所有物理内存和交换空间总和的内存
 sed -i "s#^vm.overcommit_memory.*#vm.overcommit_memory=1#" /etc/sysctl.conf 2>/dev/null
 
 echo "net.core.somaxconn=1024" >> /etc/sysctl.conf
